@@ -58,4 +58,4 @@ docker-up-old:
 	docker run -p $(PORT):8080 --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
 generate-doc:
-	swag init -d internal/api -g calculator_api.go -g package.go -g server_side_rendering.go
+	swag init -d internal/api -g calcalator_api.go -g package.go

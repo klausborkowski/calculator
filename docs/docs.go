@@ -15,35 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/app": {
-            "get": {
-                "description": "Serves the HTML UI with available package sizes",
-                "consumes": [
-                    "text/html"
-                ],
-                "produces": [
-                    "text/html"
-                ],
-                "tags": [
-                    "UI"
-                ],
-                "summary": "Render the application UI",
-                "responses": {
-                    "200": {
-                        "description": "HTML page rendered successfully",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to render template",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/calculate": {
             "post": {
                 "description": "Calculates the number of packages required for an order size",
@@ -106,12 +77,12 @@ const docTemplate = `{
                 "summary": "Add a new package size",
                 "parameters": [
                     {
-                        "description": "Package size to add",
-                        "name": "packageSize",
+                        "description": "Package size request",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "object"
                         }
                     }
                 ],
@@ -129,7 +100,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/package/{id}": {
             "delete": {
                 "description": "Deletes a package by its ID",
                 "consumes": [
@@ -144,13 +117,11 @@ const docTemplate = `{
                 "summary": "Delete a package",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "ID of the package to delete",
                         "name": "id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
