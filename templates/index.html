@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .container {
+            width: 400px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .packages, .order, .results {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .results {
+            border-bottom: none;
+        }
+        input {
+            padding: 5px;
+            width: 100px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .full-width-btn {
+            width: 100%;
+            background-color: #ee930a; 
+            color: white; 
+            border: none; 
+            padding: 10px 0; 
+            font-size: 26px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            transition: background-color 0.3s ease; 
+        }
+
+        .full-width-btn:hover {
+            background-color: #804b0e;
+        }
+    </style>
+</head>
+<body>
+    <button class="swagger-btn" onclick="openSwagger()">Swagger</button>
+    <!-- Блок 1: Packages -->
+    <div class="container packages">
+        <h3>Packages</h3>
+        <div id="package-list">
+            {{ range $key, $value := . }}
+            <div id="package-{{$key}}">
+                <input type="number" value="{{$value}}" id="package{{$key}}" disabled>
+                <button onclick="removePackage('{{$key}}')">❌</button>
+            </div>
+            {{ end }}
+        </div>
+        <div id="new-package">
+            <input type="number" id="packageSizeInput" placeholder="Enter size">
+            <button onclick="addPackage()">✔️</button>
+        </div>
+    </div>
+
+    <!-- Блок 2: Order -->
+    <div class="container order">
+        <h3>Order</h3>
+        <input type="number" id="orderSize" placeholder="Enter order size">
+    </div>
+
+    <!-- Блок 3: Calculate -->
+    <div class="container" style="border: none;">
+        <button class="full-width-btn" onclick="calculate()">Calculate</button>
+    </div>
+
+    <!-- Блок 4: Results -->
+    <div class="container results">
+        <h3>Results</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Package Size</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody id="results-table">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function removePackage(packageId) {
+            
+            if (packageId && packageId.nodeType) {
+                const btn = packageId;
+                packageId = btn.dataset && btn.dataset.id ? btn.dataset.id : (btn.closest && btn.closest('div') ? btn.closest('div').id.replace('package-', '') : null);
+            }
+
+            if (!packageId) {
+                alert("Error deleting package: missing id");
+                return;
+            }
+
+            fetch('/package', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: String(packageId)
+            })
+            .then(response => {
+                if (response.ok) {
+                    const el = document.getElementById(`package-${packageId}`);
+                    if (el) el.remove();
+                } else {
+                    response.text().then(t => alert("Error deleting package: " + (t || response.status)));
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error);
+            });
+        }
+
+        function addPackage() {
+            let input = document.getElementById("packageSizeInput");
+            let value = input.value;
+            if (!value) return;
+
+            fetch('/package', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: value
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    const t = await response.text().catch(()=>null);
+                    throw new Error(t || response.status);
+                }
+                
+                let id = await response.text().catch(()=>null);
+                if (!id) {
+                    try {
+                        const j = await response.clone().json().catch(()=>null);
+                        id = j && j.id ? String(j.id) : null;
+                    } catch(e){}
+                }
+                if (!id) id = String(Date.now()); 
+
+                let div = document.createElement("div");
+                div.id = `package-${id}`;
+                div.innerHTML = `<input type="number" value="${value}" disabled> <button data-id="${id}" onclick="removePackage('${id}')">❌</button>`;
+
+                document.getElementById("package-list").appendChild(div);
+                input.value = "";
+            })
+            .catch(error => {
+                alert("Error adding package: " + error);
+            });
+        }
+
+    function calculate() {
+    let orderSize = document.getElementById("orderSize").value;
+
+
+
+    fetch('/calculate', {
+        method: 'POST',
+        body: orderSize 
+    })
+    .then(response => response.json()) 
+    .then(result => {
+        updateResults(result);
+    })
+    .catch(error => {
+        alert("Error: " + error);
+    });
+}
+    function updateResults(results) {
+        let resultsTable = document.getElementById("results-table");
+        resultsTable.innerHTML = ""; 
+
+        for (let packageSize in results) {
+            if (results.hasOwnProperty(packageSize)) {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td>${packageSize}</td><td>${results[packageSize]}</td>`;
+                resultsTable.appendChild(row);
+            }
+        }
+    }
+
+
+    </script>
+<div id="swagger-modal">
+    <div class="swagger-content">
+        <button class="close-btn" onclick="closeSwagger()">✖</button>
+        <iframe id="swagger-frame"></iframe>
+    </div>
+</div>
+
+<style>
+    .swagger-btn {
+        background-color: #2ecc71;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .swagger-btn:hover {
+        background-color: #27ae60;
+    }
+
+    /* Всплывающее окно */
+    #swagger-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .swagger-content {
+        position: relative;
+        width: 80%;
+        height: 80%;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: red;
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 50%;
+    }
+
+    #swagger-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
+
+<script>
+    function openSwagger() {
+        document.getElementById("swagger-modal").style.display = "flex";
+        document.getElementById("swagger-frame").src = window.location.origin + "/swagger/";
+    }
+
+    function closeSwagger() {
+        document.getElementById("swagger-modal").style.display = "none";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: calculator-postgres
+    environment:
+      POSTGRES_USER: calculator
+      POSTGRES_PASSWORD: calculator
+      POSTGRES_DB: calculator
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrate:/docker-entrypoint-initdb.d
+    networks:
+      - calculator-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U calculator"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: calculator-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=calculator
+      - DB_PASSWORD=calculator
+      - DB_NAME=calculator
+    volumes:
+      - ./.env:/root/.env:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - calculator-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: calculator-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - calculator-network
+
+networks:
+  calculator-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

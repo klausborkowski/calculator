@@ -1,0 +1,126 @@
+info:
+  contact: {}
+paths:
+  /app:
+    get:
+      consumes:
+      - text/html
+      description: Serves the HTML UI with available package sizes
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: HTML page rendered successfully
+          schema:
+            type: string
+        "500":
+          description: Failed to render template
+          schema:
+            type: string
+      summary: Render the application UI
+      tags:
+      - UI
+  /calculate:
+    post:
+      consumes:
+      - application/json
+      description: Calculates the number of packages required for an order size
+      parameters:
+      - description: Order size
+        in: body
+        name: orderSize
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Calculated package details
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request format
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Calculate package sizes needed
+      tags:
+      - Orders
+  /package:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a package by its ID
+      parameters:
+      - description: ID of the package to delete
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Package deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid request format
+          schema:
+            type: string
+      summary: Delete a package
+      tags:
+      - Packages
+    post:
+      consumes:
+      - application/json
+      description: Adds a new package size to the system
+      parameters:
+      - description: Package size to add
+        in: body
+        name: packageSize
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Package added successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid request format
+          schema:
+            type: string
+      summary: Add a new package size
+      tags:
+      - Packages
+  /packages:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of all available package sizes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of package sizes
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "500":
+          description: Failed to encode response
+          schema:
+            type: string
+      summary: Get all package sizes
+      tags:
+      - Packages
+swagger: "2.0"
