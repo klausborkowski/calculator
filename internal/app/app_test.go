@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mikolabarkouski/calculator/internal/repo"
+	"github.com/klausborkowski/calculator/internal/repo"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

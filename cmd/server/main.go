@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
-	"github.com/mikolabarkouski/calculator/config"
-	_ "github.com/mikolabarkouski/calculator/docs"
-	"github.com/mikolabarkouski/calculator/internal/api"
-	"github.com/mikolabarkouski/calculator/internal/app"
-	"github.com/mikolabarkouski/calculator/internal/repo"
+	"github.com/klausborkowski/calculator/config"
+	_ "github.com/klausborkowski/calculator/docs"
+	"github.com/klausborkowski/calculator/internal/api"
+	"github.com/klausborkowski/calculator/internal/app"
+	"github.com/klausborkowski/calculator/internal/repo"
 )
 
 func main() {

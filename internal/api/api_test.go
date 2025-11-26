@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi"
-	"github.com/mikolabarkouski/calculator/internal/app"
+	"github.com/klausborkowski/calculator/internal/app"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
