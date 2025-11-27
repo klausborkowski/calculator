@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"github.com/mikolabarkouski/calculator/internal/repo"
+	"github.com/klausborkowski/calculator/internal/repo"
 	"github.com/stretchr/testify/require"
 )
 

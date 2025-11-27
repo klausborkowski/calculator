@@ -8,9 +8,9 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/mikolabarkouski/calculator/internal/app"
-	"github.com/mikolabarkouski/calculator/internal/repo"
-	"github.com/mikolabarkouski/calculator/templates"
+	"github.com/klausborkowski/calculator/internal/app"
+	"github.com/klausborkowski/calculator/internal/repo"
+	"github.com/klausborkowski/calculator/templates"
 	"github.com/stretchr/testify/require"
 )
 

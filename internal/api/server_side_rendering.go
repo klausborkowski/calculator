@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/mikolabarkouski/calculator/templates"
+	"github.com/klausborkowski/calculator/templates"
 )
 
 // @Summary Render the application UI

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	_ "github.com/mikolabarkouski/calculator/docs"
+	_ "github.com/klausborkowski/calculator/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 

@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/mikolabarkouski/calculator/internal/app"
+	"github.com/klausborkowski/calculator/internal/app"
 )
 
 type Handler struct {

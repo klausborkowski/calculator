@@ -1,4 +1,4 @@
-module github.com/mikolabarkouski/calculator
+module github.com/klausborkowski/calculator
 
 go 1.22.6
 
