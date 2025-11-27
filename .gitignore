@@ -1,5 +1,7 @@
-
+.env
 .vscode
-bin/
+
 coverage.html
 coverage.out
+bin/
+node_modules/

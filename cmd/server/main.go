@@ -6,39 +6,30 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
-	"github.com/klausborkowski/calculator/config"
-	_ "github.com/klausborkowski/calculator/docs"
-	"github.com/klausborkowski/calculator/internal/api"
-	"github.com/klausborkowski/calculator/internal/app"
-	"github.com/klausborkowski/calculator/internal/repo"
+	"github.com/mikolabarkouski/calculator/config"
+	_ "github.com/mikolabarkouski/calculator/docs"
+	"github.com/mikolabarkouski/calculator/internal/api"
+	"github.com/mikolabarkouski/calculator/internal/app"
+	"github.com/mikolabarkouski/calculator/internal/repo"
 )
 
 func main() {
-	// Try to load .env file, but don't fail if it doesn't exist (for Docker)
-	if err := godotenv.Load(); err != nil {
-		log.Printf("Warning: failed to load .env file: %v", err)
+	envLoadErr := godotenv.Load()
+	if envLoadErr != nil {
+		log.Panic("env load err")
 	}
 
 	cfg := config.LoadConfig()
 
-	log.Printf("Connecting to database: %s:%s/%s", cfg.DBHost, cfg.DBPort, cfg.DBName)
+	log.Printf("PACKAGES DEFAULT:%v", cfg.PackagesDefault)
 
-	// Initialize components: repository, application, and handler
-	repository, err := repo.NewRepository(cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
-	if err != nil {
-		log.Fatalf("Failed to initialize repository: %v", err)
-	}
-	defer func() {
-		if err := repository.Close(); err != nil {
-			log.Printf("Error closing repository: %v", err)
-		}
-	}()
-
+	//define components -> repo,app and handler(api)
+	repository := repo.NewRepository(cfg.PackagesDefault)
 	application := app.NewApp(repository)
 	handler := api.NewHandler(application)
 
-	log.Printf("Starting server on :%s", cfg.Port)
+	log.Printf("Starting server on :%s\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), handler.Router()); err != nil {
-		log.Fatalf("Server failed: %v", err)
+		log.Fatal("Server failed:", err)
 	}
 }

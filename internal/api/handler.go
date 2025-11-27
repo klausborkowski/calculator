@@ -3,11 +3,11 @@ package api
 import (
 	"net/http"
 
-	"github.com/klausborkowski/calculator/internal/app"
+	"github.com/mikolabarkouski/calculator/internal/app"
 )
 
 type Handler struct {
-	app app.AppInterface
+	app *app.App
 }
 
 func NewHandler(a *app.App) *Handler {

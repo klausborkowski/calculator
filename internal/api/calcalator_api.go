@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -21,35 +20,31 @@ func (h *Handler) calculate(w http.ResponseWriter, r *http.Request) {
 	var orderSizeRequest int
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("Error reading request body: %v", err)
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
 
 	if err := json.Unmarshal(body, &orderSizeRequest); err != nil {
-		log.Printf("Error unmarshaling order size request: %v", err)
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
-
-	packageSizes, err := h.app.GetPackages()
-	if err != nil {
-		log.Printf("Error getting packages for calculation: %v", err)
-		http.Error(w, "Failed to get packages: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+	packageSizes := h.app.GetPackages()
 
 	result, err := h.app.CalculatePacksNeeded(orderSizeRequest, packageSizes)
 	if err != nil {
-		log.Printf("Error calculating packs needed (order size: %d): %v", orderSizeRequest, err)
-		http.Error(w, "Failed to calculate packs needed: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "error happened", http.StatusInternalServerError)
+		return
+	}
+
+	err = json.Unmarshal(body, &orderSizeRequest)
+	if err != nil {
+		http.Error(w, "error happened", http.StatusInternalServerError)
 		return
 	}
 
 	responseBody, err := json.Marshal(result)
 	if err != nil {
-		log.Printf("Error marshaling calculation result: %v", err)
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}

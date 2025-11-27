@@ -1,36 +1,35 @@
 package app
 
 import (
-	"github.com/klausborkowski/calculator/internal/repo"
+	"github.com/mikolabarkouski/calculator/internal/repo"
 )
 
 type App struct {
-	repo repo.RepositoryInterface
+	repo *repo.Repository
 }
 
-// Ensure App implements AppInterface
-var _ AppInterface = (*App)(nil)
-
-func NewApp(r repo.RepositoryInterface) *App {
+func NewApp(r *repo.Repository) *App {
 	return &App{repo: r}
 }
 
-// GetPackages returns a slice of all stored package sizes
-func (a *App) GetPackages() ([]int, error) {
-	return a.repo.GetPackages()
+// get slice(array) of all stored packages (package-sizes)
+func (a *App) GetPackages() []int {
+	packages := a.repo.GetPackages()
+	return packages
 }
 
-// GetPackagesMap returns package sizes as a key-value collection
-func (a *App) GetPackagesMap() (map[string]int, error) {
-	return a.repo.GetPackagesMap()
+// get package-sizes as key-value collection
+func (a *App) GetPackagesMap() map[string]int {
+	packagesMap := a.repo.GetPackagesMap()
+	return packagesMap
 }
 
-// AddPackage adds a new package size
-func (a *App) AddPackage(packageSize int) error {
-	return a.repo.AddPackage(packageSize)
+// add package size
+func (a *App) AddPackage(packageSize int) {
+	a.repo.AddPackage(packageSize)
 }
 
-// DeletePackage deletes a package by its ID
-func (a *App) DeletePackage(id string) error {
-	return a.repo.DeletePackageById(id)
+// delete package size
+func (a *App) DeletePackage(id string) {
+	a.repo.DeletePackageById(id)
 }
