@@ -213,4 +213,4 @@ Alternatively, use the **Swagger Button** in the UI to open the API docs.
 - `POST /api/calculate` - calculate optimal package distribution
 
 ## 7. Deployed service
-There is packager deployed publicly here (server side rendered optimised for service source coded): [Packager Service](https://calculator-ieo1.onrender.com/app)
+There is packager deployed publicly here (server side rendered optimised for Render deployment free plaf , source branch is [render-dev](https://github.com/klausborkowski/calculator/tree/render-dev)): [Packager Service](https://calculator-ieo1.onrender.com/app)
