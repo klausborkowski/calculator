@@ -1,5 +1,5 @@
-.env
-.vscode
 
+.vscode
+bin/
 coverage.html
 coverage.out

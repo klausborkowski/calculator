@@ -24,25 +24,36 @@ Our customers can order any number of these items through our website, but they 
 
 ## 2. Requirements
 
-To run the service, you need to install:
-- **Docker** and **Docker Compose** (for Docker-based setup)
-- **Go 1.22+** (for local backend development)
-- **Node.js 18+** and **npm** (for local frontend development)
-- **PostgreSQL 16+** (for local setup, or use Docker)
+### Docker-based workflows (`make start`, `make docker-up`)
+- **Docker Engine** ≥ 29.0.4
+- **Docker Compose** ≥ v2.40.3
+- **Make** (usually preinstalled on Linux/macOS)
+
+### Hybrid/local workflows (`make start-local`, manual dev)
+- **Go** 1.22+
+- **Node.js** 18+ and **npm** 9+
+- **PostgreSQL** 16+ (can be provided by Docker when using `make start-local`)
+- **Make**
 
 ---
 
 ## 3. Running the Service
 
-### Method 1: Docker Setup (Recommended)
+### Method 1: Docker Setup (`make start`, recommended)
 
-The easiest way to run the entire service is using Docker Compose:
+The easiest way to run the entire stack (PostgreSQL + backend + frontend) is via:
+
+```sh
+make start
+```
+
+`make start` is just a shortcut for the more explicit:
 
 ```sh
 make docker-up
 ```
 
-or
+or, if you prefer plain Docker commands:
 
 ```sh
 docker compose up --build -d
@@ -58,7 +69,7 @@ After startup, services will be available at:
 - **Backend API**: http://localhost:8080
 - **Swagger documentation**: http://localhost:8080/swagger/index.html
 
-To stop the services:
+To stop the services launched by `make start`:
 ```sh
 make docker-down
 ```
@@ -74,7 +85,22 @@ To view logs:
 docker compose logs -f
 ```
 
-### Method 2: Local Development (without Docker)
+### Method 2: Hybrid Setup (`make start-local`)
+
+Use this when you want PostgreSQL to run inside Docker but keep the backend and frontend running locally (useful for debugging with hot reload).
+
+```sh
+make start-local
+```
+
+What happens under the hood:
+- `docker compose up postgres -d` starts the database container.
+- `.env` (if present) is sourced so that backend/frontend share the same settings.
+- Backend runs via `go run ./cmd/server/main.go`.
+- Frontend runs via `npm run dev` with `VITE_API_BASE_URL=http://localhost:8080`.
+- When you stop the process (Ctrl+C), local processes are terminated and the Postgres container is stopped.
+
+### Method 3: Local Development (without Docker)
 
 If you want to run the service locally without Docker:
 

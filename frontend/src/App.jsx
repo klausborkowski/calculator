@@ -4,7 +4,9 @@ import './index.css'
 // Use relative path for nginx proxy in Docker
 // In development mode through Vite use empty string for proxy
 // In production through nginx also use relative paths
-const API_BASE_URL = import.meta.env.DEV ? '' : ''
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? 'http://localhost:8080' : '')
 
 function App() {
   const [packages, setPackages] = useState({})
